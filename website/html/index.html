@@ -8,28 +8,81 @@
     <title>Document</title>
     <link rel="stylesheet" href="../css/w3.css">
     <script src="../js/jquery-3.1.0.min.js"></script>
+
     <script>
         $(document).ready(function () {
-            var div = document.getElementById("console");
-            div.scrollTop = div.scrollHeight;
+            getData(1);
+
+            function update()
+            {
+                setTimeout(function() {
+                    getData(2);
+                    update();
+                }, 100)
+            }
+
+            update();
         });
     </script>
     <script>
-        /*
-        function openCity(evt, cityName) {
-            var i, x, tablinks;
-            x = document.getElementsByClassName("city");
-            for (i = 0; i < x.length; i++) {
-                x[i].style.display = "none";
+        function getData(newOrOld){
+            var xhttp = new XMLHttpRequest();
+            if (newOrOld == 1)
+            {
+                xhttp.open("GET", "../php/get_log.php");
+                xhttp.send();
+                xhttp.onreadystatechange = function() {
+                    //xhttp.open("GET", "../../logs/python_templog.log", true);
+                    if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        document.getElementById("console").innerHTML = xhttp.responseText;
+                        var div = document.getElementById("console");
+                        div.scrollTop = div.scrollHeight;
+                    }
+                };
             }
-            tablinks = document.getElementsByClassName("tablink");
-            for (i = 0; i < x.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+            else
+            {
+                var lastLog = document.getElementById('console').innerHTML.split(/\r?\n/);
+                lastLog = lastLog[lastLog.length - 2];
+                $.post("../php/update_log.php", {postlastLog:lastLog},
+                function (lastLog) {
+                    $('#console').append(lastLog);
+                    var div = document.getElementById("console");
+                    div.scrollTop = div.scrollHeight;
+                });
+                /*
+                xhttp.open("GET", "../php/update_log.php");
+                xhttp.send();
+                xhttp.onreadystatechange = function() {
+                    //xhttp.open("GET", "../../logs/python_templog.log", true);
+                    if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        var lastLog = document.getElementById('console').innerHTML.split(/\r?\n/);
+                        alert(lastLog[lastLog.length - 2]);
+                        document.getElementById("console").innerHTML = xhttp.responseText;
+                        var div = document.getElementById("console");
+                        div.scrollTop = div.scrollHeight;
+                    }
+                };
+                */
             }
-            document.getElementById(cityName).style.display = "block";
-            evt.currentTarget.className += " w3-red";
         }
-        */
+    </script>
+    <script>
+        /*
+         function openCity(evt, cityName) {
+         var i, x, tablinks;
+         x = document.getElementsByClassName("city");
+         for (i = 0; i < x.length; i++) {
+         x[i].style.display = "none";
+         }
+         tablinks = document.getElementsByClassName("tablink");
+         for (i = 0; i < x.length; i++) {
+         tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+         }
+         document.getElementById(cityName).style.display = "block";
+         evt.currentTarget.className += " w3-red";
+         }
+         */
     </script>
 </head>
 <body>
@@ -39,7 +92,7 @@
 </div>
 
 <div class="w3-container">
-    <div class="w3-quarter w3-center w3-display-container" id="settings" style="height: 90vh; width: 20%">
+    <div class="w3-quarter w3-center w3-display-container" id="settings" style="height: 88vh; width: 20%">
         <div class="w3-display-topmiddle w3-blue-grey">
             <h1>Filter Settings</h1>
         </div>
@@ -70,262 +123,16 @@
             <li><a href="#" class="tablink">Log 2</a></li>
             <li><a href="#" class="tablink">Log 3</a></li>
         </ul>
-        <div class="w3-black w3-rest w3-margin-bottom" id="console" style="height: 90vh; overflow-y: auto; white-space: pre">
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - andrew.crabtree@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - amber.miller@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:92 - file name:
-        2016-07-13 16:42:03,029:root:DEBUG:158 - Adding reviewer to gerrit - joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,089:root:DEBUG:158 - Adding reviewer to gerrit - amber.miller@hpe.com
-        2016-07-13 16:42:03,505:root:DEBUG:158 - Adding reviewer to gerrit - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,565:root:WARNING:163 - Gerrit - Unknown user jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,625:root:DEBUG:158 - Adding reviewer to gerrit - andrew.crabtree@hpe.com
-        2016-07-13 16:42:04,209:root:DEBUG:173 - The Eye of Sauron is finished with this change and looking for more
-        2016-07-13 16:42:04,312:root:INFO:34 -
-        2016-07-13 16:42:04,312:root:INFO:35 - sauron.py sees 339,1
-        2016-07-13 16:42:04,369:root:INFO:43 - Sauron is fetching changes for refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:INFO:48 - Sauron is processing refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:DEBUG:52 - cd into repo /ws/sauron/gerrit_repo
-        2016-07-13 16:42:04,495:root:INFO:64 - Sauron took 0.125483989716 seconds to fetch branch master
-        2016-07-13 16:42:04,791:root:INFO:75 - Sauron took 0.294643878937 seconds to fetch patch_ref refs/changes/39/339/1
-        2016-07-13 16:42:04,809:root:DEBUG:92 - file name: halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:108 - Adding reviewers for ops-cli from halon-src/ops-cli/REVIEWERS for halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,815:root:INFO:120 - no halon-src/ops-cli/REVIEWERS in origin/master
-        2016-07-13 16:42:04,815:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,820:root:DEBUG:147 - reviewers_list is jeremy.b.brown2@hpe.com
+        <div class="w3-black w3-rest w3-margin-bottom" id="console" style="height: 88vh; overflow-y: auto; white-space: pre">
 
-        2016-07-13 16:42:04,820:root:DEBUG:152 - Adding reviewer to the queue - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:04,820:root:DEBUG:92 - file name: halon-src/ops-cli/COPYING
-        2016-07-13 16:42:04,821:root:DEBUG:92 - file name: halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:108 - Adding reviewers for ops-pmd from halon-src/ops-pmd/REVIEWERS for halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,826:root:INFO:120 - no halon-src/ops-pmd/REVIEWERS in origin/master
-        2016-07-13 16:42:04,827:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,832:root:DEBUG:147 - reviewers_list is joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - andrew.crabtree@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - amber.miller@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:92 - file name:
-        2016-07-13 16:42:03,029:root:DEBUG:158 - Adding reviewer to gerrit - joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,089:root:DEBUG:158 - Adding reviewer to gerrit - amber.miller@hpe.com
-        2016-07-13 16:42:03,505:root:DEBUG:158 - Adding reviewer to gerrit - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,565:root:WARNING:163 - Gerrit - Unknown user jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,625:root:DEBUG:158 - Adding reviewer to gerrit - andrew.crabtree@hpe.com
-        2016-07-13 16:42:04,209:root:DEBUG:173 - The Eye of Sauron is finished with this change and looking for more
-        2016-07-13 16:42:04,312:root:INFO:34 -
-        2016-07-13 16:42:04,312:root:INFO:35 - sauron.py sees 339,1
-        2016-07-13 16:42:04,369:root:INFO:43 - Sauron is fetching changes for refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:INFO:48 - Sauron is processing refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:DEBUG:52 - cd into repo /ws/sauron/gerrit_repo
-        2016-07-13 16:42:04,495:root:INFO:64 - Sauron took 0.125483989716 seconds to fetch branch master
-        2016-07-13 16:42:04,791:root:INFO:75 - Sauron took 0.294643878937 seconds to fetch patch_ref refs/changes/39/339/1
-        2016-07-13 16:42:04,809:root:DEBUG:92 - file name: halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:108 - Adding reviewers for ops-cli from halon-src/ops-cli/REVIEWERS for halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,815:root:INFO:120 - no halon-src/ops-cli/REVIEWERS in origin/master
-        2016-07-13 16:42:04,815:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,820:root:DEBUG:147 - reviewers_list is jeremy.b.brown2@hpe.com
-
-        2016-07-13 16:42:04,820:root:DEBUG:152 - Adding reviewer to the queue - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:04,820:root:DEBUG:92 - file name: halon-src/ops-cli/COPYING
-        2016-07-13 16:42:04,821:root:DEBUG:92 - file name: halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:108 - Adding reviewers for ops-pmd from halon-src/ops-pmd/REVIEWERS for halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,826:root:INFO:120 - no halon-src/ops-pmd/REVIEWERS in origin/master
-        2016-07-13 16:42:04,827:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,832:root:DEBUG:147 - reviewers_list is joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - andrew.crabtree@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - amber.miller@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:92 - file name:
-        2016-07-13 16:42:03,029:root:DEBUG:158 - Adding reviewer to gerrit - joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,089:root:DEBUG:158 - Adding reviewer to gerrit - amber.miller@hpe.com
-        2016-07-13 16:42:03,505:root:DEBUG:158 - Adding reviewer to gerrit - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,565:root:WARNING:163 - Gerrit - Unknown user jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,625:root:DEBUG:158 - Adding reviewer to gerrit - andrew.crabtree@hpe.com
-        2016-07-13 16:42:04,209:root:DEBUG:173 - The Eye of Sauron is finished with this change and looking for more
-        2016-07-13 16:42:04,312:root:INFO:34 -
-        2016-07-13 16:42:04,312:root:INFO:35 - sauron.py sees 339,1
-        2016-07-13 16:42:04,369:root:INFO:43 - Sauron is fetching changes for refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:INFO:48 - Sauron is processing refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:DEBUG:52 - cd into repo /ws/sauron/gerrit_repo
-        2016-07-13 16:42:04,495:root:INFO:64 - Sauron took 0.125483989716 seconds to fetch branch master
-        2016-07-13 16:42:04,791:root:INFO:75 - Sauron took 0.294643878937 seconds to fetch patch_ref refs/changes/39/339/1
-        2016-07-13 16:42:04,809:root:DEBUG:92 - file name: halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:108 - Adding reviewers for ops-cli from halon-src/ops-cli/REVIEWERS for halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,815:root:INFO:120 - no halon-src/ops-cli/REVIEWERS in origin/master
-        2016-07-13 16:42:04,815:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,820:root:DEBUG:147 - reviewers_list is jeremy.b.brown2@hpe.com
-
-        2016-07-13 16:42:04,820:root:DEBUG:152 - Adding reviewer to the queue - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:04,820:root:DEBUG:92 - file name: halon-src/ops-cli/COPYING
-        2016-07-13 16:42:04,821:root:DEBUG:92 - file name: halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:108 - Adding reviewers for ops-pmd from halon-src/ops-pmd/REVIEWERS for halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,826:root:INFO:120 - no halon-src/ops-pmd/REVIEWERS in origin/master
-        2016-07-13 16:42:04,827:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,832:root:DEBUG:147 - reviewers_list is joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - andrew.crabtree@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - amber.miller@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:92 - file name:
-        2016-07-13 16:42:03,029:root:DEBUG:158 - Adding reviewer to gerrit - joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,089:root:DEBUG:158 - Adding reviewer to gerrit - amber.miller@hpe.com
-        2016-07-13 16:42:03,505:root:DEBUG:158 - Adding reviewer to gerrit - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,565:root:WARNING:163 - Gerrit - Unknown user jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,625:root:DEBUG:158 - Adding reviewer to gerrit - andrew.crabtree@hpe.com
-        2016-07-13 16:42:04,209:root:DEBUG:173 - The Eye of Sauron is finished with this change and looking for more
-        2016-07-13 16:42:04,312:root:INFO:34 -
-        2016-07-13 16:42:04,312:root:INFO:35 - sauron.py sees 339,1
-        2016-07-13 16:42:04,369:root:INFO:43 - Sauron is fetching changes for refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:INFO:48 - Sauron is processing refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:DEBUG:52 - cd into repo /ws/sauron/gerrit_repo
-        2016-07-13 16:42:04,495:root:INFO:64 - Sauron took 0.125483989716 seconds to fetch branch master
-        2016-07-13 16:42:04,791:root:INFO:75 - Sauron took 0.294643878937 seconds to fetch patch_ref refs/changes/39/339/1
-        2016-07-13 16:42:04,809:root:DEBUG:92 - file name: halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:108 - Adding reviewers for ops-cli from halon-src/ops-cli/REVIEWERS for halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,815:root:INFO:120 - no halon-src/ops-cli/REVIEWERS in origin/master
-        2016-07-13 16:42:04,815:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,820:root:DEBUG:147 - reviewers_list is jeremy.b.brown2@hpe.com
-
-        2016-07-13 16:42:04,820:root:DEBUG:152 - Adding reviewer to the queue - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:04,820:root:DEBUG:92 - file name: halon-src/ops-cli/COPYING
-        2016-07-13 16:42:04,821:root:DEBUG:92 - file name: halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:108 - Adding reviewers for ops-pmd from halon-src/ops-pmd/REVIEWERS for halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,826:root:INFO:120 - no halon-src/ops-pmd/REVIEWERS in origin/master
-        2016-07-13 16:42:04,827:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,832:root:DEBUG:147 - reviewers_list is joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - andrew.crabtree@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - amber.miller@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:92 - file name:
-        2016-07-13 16:42:03,029:root:DEBUG:158 - Adding reviewer to gerrit - joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,089:root:DEBUG:158 - Adding reviewer to gerrit - amber.miller@hpe.com
-        2016-07-13 16:42:03,505:root:DEBUG:158 - Adding reviewer to gerrit - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,565:root:WARNING:163 - Gerrit - Unknown user jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,625:root:DEBUG:158 - Adding reviewer to gerrit - andrew.crabtree@hpe.com
-        2016-07-13 16:42:04,209:root:DEBUG:173 - The Eye of Sauron is finished with this change and looking for more
-        2016-07-13 16:42:04,312:root:INFO:34 -
-        2016-07-13 16:42:04,312:root:INFO:35 - sauron.py sees 339,1
-        2016-07-13 16:42:04,369:root:INFO:43 - Sauron is fetching changes for refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:INFO:48 - Sauron is processing refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:DEBUG:52 - cd into repo /ws/sauron/gerrit_repo
-        2016-07-13 16:42:04,495:root:INFO:64 - Sauron took 0.125483989716 seconds to fetch branch master
-        2016-07-13 16:42:04,791:root:INFO:75 - Sauron took 0.294643878937 seconds to fetch patch_ref refs/changes/39/339/1
-        2016-07-13 16:42:04,809:root:DEBUG:92 - file name: halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:108 - Adding reviewers for ops-cli from halon-src/ops-cli/REVIEWERS for halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,815:root:INFO:120 - no halon-src/ops-cli/REVIEWERS in origin/master
-        2016-07-13 16:42:04,815:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,820:root:DEBUG:147 - reviewers_list is jeremy.b.brown2@hpe.com
-
-        2016-07-13 16:42:04,820:root:DEBUG:152 - Adding reviewer to the queue - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:04,820:root:DEBUG:92 - file name: halon-src/ops-cli/COPYING
-        2016-07-13 16:42:04,821:root:DEBUG:92 - file name: halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:108 - Adding reviewers for ops-pmd from halon-src/ops-pmd/REVIEWERS for halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,826:root:INFO:120 - no halon-src/ops-pmd/REVIEWERS in origin/master
-        2016-07-13 16:42:04,827:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,832:root:DEBUG:147 - reviewers_list is joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - andrew.crabtree@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - amber.miller@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:92 - file name:
-        2016-07-13 16:42:03,029:root:DEBUG:158 - Adding reviewer to gerrit - joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,089:root:DEBUG:158 - Adding reviewer to gerrit - amber.miller@hpe.com
-        2016-07-13 16:42:03,505:root:DEBUG:158 - Adding reviewer to gerrit - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,565:root:WARNING:163 - Gerrit - Unknown user jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,625:root:DEBUG:158 - Adding reviewer to gerrit - andrew.crabtree@hpe.com
-        2016-07-13 16:42:04,209:root:DEBUG:173 - The Eye of Sauron is finished with this change and looking for more
-        2016-07-13 16:42:04,312:root:INFO:34 -
-        2016-07-13 16:42:04,312:root:INFO:35 - sauron.py sees 339,1
-        2016-07-13 16:42:04,369:root:INFO:43 - Sauron is fetching changes for refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:INFO:48 - Sauron is processing refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:DEBUG:52 - cd into repo /ws/sauron/gerrit_repo
-        2016-07-13 16:42:04,495:root:INFO:64 - Sauron took 0.125483989716 seconds to fetch branch master
-        2016-07-13 16:42:04,791:root:INFO:75 - Sauron took 0.294643878937 seconds to fetch patch_ref refs/changes/39/339/1
-        2016-07-13 16:42:04,809:root:DEBUG:92 - file name: halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:108 - Adding reviewers for ops-cli from halon-src/ops-cli/REVIEWERS for halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,815:root:INFO:120 - no halon-src/ops-cli/REVIEWERS in origin/master
-        2016-07-13 16:42:04,815:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,820:root:DEBUG:147 - reviewers_list is jeremy.b.brown2@hpe.com
-
-        2016-07-13 16:42:04,820:root:DEBUG:152 - Adding reviewer to the queue - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:04,820:root:DEBUG:92 - file name: halon-src/ops-cli/COPYING
-        2016-07-13 16:42:04,821:root:DEBUG:92 - file name: halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:108 - Adding reviewers for ops-pmd from halon-src/ops-pmd/REVIEWERS for halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,826:root:INFO:120 - no halon-src/ops-pmd/REVIEWERS in origin/master
-        2016-07-13 16:42:04,827:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,832:root:DEBUG:147 - reviewers_list is joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - andrew.crabtree@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - amber.miller@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:92 - file name:
-        2016-07-13 16:42:03,029:root:DEBUG:158 - Adding reviewer to gerrit - joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,089:root:DEBUG:158 - Adding reviewer to gerrit - amber.miller@hpe.com
-        2016-07-13 16:42:03,505:root:DEBUG:158 - Adding reviewer to gerrit - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,565:root:WARNING:163 - Gerrit - Unknown user jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,625:root:DEBUG:158 - Adding reviewer to gerrit - andrew.crabtree@hpe.com
-        2016-07-13 16:42:04,209:root:DEBUG:173 - The Eye of Sauron is finished with this change and looking for more
-        2016-07-13 16:42:04,312:root:INFO:34 -
-        2016-07-13 16:42:04,312:root:INFO:35 - sauron.py sees 339,1
-        2016-07-13 16:42:04,369:root:INFO:43 - Sauron is fetching changes for refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:INFO:48 - Sauron is processing refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:DEBUG:52 - cd into repo /ws/sauron/gerrit_repo
-        2016-07-13 16:42:04,495:root:INFO:64 - Sauron took 0.125483989716 seconds to fetch branch master
-        2016-07-13 16:42:04,791:root:INFO:75 - Sauron took 0.294643878937 seconds to fetch patch_ref refs/changes/39/339/1
-        2016-07-13 16:42:04,809:root:DEBUG:92 - file name: halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:108 - Adding reviewers for ops-cli from halon-src/ops-cli/REVIEWERS for halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,815:root:INFO:120 - no halon-src/ops-cli/REVIEWERS in origin/master
-        2016-07-13 16:42:04,815:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,820:root:DEBUG:147 - reviewers_list is jeremy.b.brown2@hpe.com
-
-        2016-07-13 16:42:04,820:root:DEBUG:152 - Adding reviewer to the queue - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:04,820:root:DEBUG:92 - file name: halon-src/ops-cli/COPYING
-        2016-07-13 16:42:04,821:root:DEBUG:92 - file name: halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:108 - Adding reviewers for ops-pmd from halon-src/ops-pmd/REVIEWERS for halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,826:root:INFO:120 - no halon-src/ops-pmd/REVIEWERS in origin/master
-        2016-07-13 16:42:04,827:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,832:root:DEBUG:147 - reviewers_list is joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - andrew.crabtree@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:152 - Adding reviewer to the queue - amber.miller@hpe.com
-        2016-07-13 16:42:03,029:root:DEBUG:92 - file name:
-        2016-07-13 16:42:03,029:root:DEBUG:158 - Adding reviewer to gerrit - joshua.mor.pfeffer@hpe.com
-        2016-07-13 16:42:03,089:root:DEBUG:158 - Adding reviewer to gerrit - amber.miller@hpe.com
-        2016-07-13 16:42:03,505:root:DEBUG:158 - Adding reviewer to gerrit - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,565:root:WARNING:163 - Gerrit - Unknown user jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:03,625:root:DEBUG:158 - Adding reviewer to gerrit - andrew.crabtree@hpe.com
-        2016-07-13 16:42:04,209:root:DEBUG:173 - The Eye of Sauron is finished with this change and looking for more
-        2016-07-13 16:42:04,312:root:INFO:34 -
-        2016-07-13 16:42:04,312:root:INFO:35 - sauron.py sees 339,1
-        2016-07-13 16:42:04,369:root:INFO:43 - Sauron is fetching changes for refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:INFO:48 - Sauron is processing refs/changes/39/339/1
-        2016-07-13 16:42:04,370:root:DEBUG:52 - cd into repo /ws/sauron/gerrit_repo
-        2016-07-13 16:42:04,495:root:INFO:64 - Sauron took 0.125483989716 seconds to fetch branch master
-        2016-07-13 16:42:04,791:root:INFO:75 - Sauron took 0.294643878937 seconds to fetch patch_ref refs/changes/39/339/1
-        2016-07-13 16:42:04,809:root:DEBUG:92 - file name: halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:108 - Adding reviewers for ops-cli from halon-src/ops-cli/REVIEWERS for halon-src/ops-cli/AUTHORS
-        2016-07-13 16:42:04,809:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,815:root:INFO:120 - no halon-src/ops-cli/REVIEWERS in origin/master
-        2016-07-13 16:42:04,815:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,820:root:DEBUG:147 - reviewers_list is jeremy.b.brown2@hpe.com
-
-        2016-07-13 16:42:04,820:root:DEBUG:152 - Adding reviewer to the queue - jeremy.b.brown2@hpe.com
-        2016-07-13 16:42:04,820:root:DEBUG:92 - file name: halon-src/ops-cli/COPYING
-        2016-07-13 16:42:04,821:root:DEBUG:92 - file name: halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:108 - Adding reviewers for ops-pmd from halon-src/ops-pmd/REVIEWERS for halon-src/ops-pmd/AUTHORS
-        2016-07-13 16:42:04,821:root:DEBUG:116 - Checking origin/master
-        2016-07-13 16:42:04,826:root:INFO:120 - no halon-src/ops-pmd/REVIEWERS in origin/master
-        2016-07-13 16:42:04,827:root:DEBUG:124 - Checking FETCH_HEAD
-        2016-07-13 16:42:04,832:root:DEBUG:147 - reviewers_list is joshua.mor.pfeffer@hpe.com
-    </div>
+        </div>
     </div>
 </div>
 </body>
 </html>
 
 <!--
+Save this as example for later
 <ul class="w3-navbar w3-black">
     <li><a href="#" class="tablink" onclick="openCity(event, 'London');">London</a></li>
     <li><a href="#" class="tablink" onclick="openCity(event, 'Paris');">Paris</a></li>
