@@ -1,0 +1,189 @@
+<!--
+NOTE:
+
+I am not a professional web developer so this tool is by no means optimized.
+
+@author: Sean Pimentel
+@contact: sincerelysyntax67@gmail.com
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/material_icons.css">
+    <link rel="stylesheet" href="css/materialize.css">
+    <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="js/materialize.js"></script>
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script>
+        $(document).ready(function () {
+            getGandalfData(1);
+            getSauronData(1);
+            getMergedData(1);
+
+            function update()
+            {
+                setTimeout(function() {
+                    getGandalfData(2);
+                    getSauronData(2);
+                    getMergedData(1);
+                    update();
+                }, 1000)
+            }
+            update();
+        });
+    </script>
+    <script>
+        function getGandalfData(newOrOld){
+            var xhttp = new XMLHttpRequest();
+            if (newOrOld == 1)
+            {
+                xhttp.open("GET", "php/get_gandalf_log.php");
+                xhttp.send();
+                xhttp.onreadystatechange = function() {
+                    if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        document.getElementById("gandalf_log").innerHTML = xhttp.responseText;
+                        var div = document.getElementById("gandalf_log");
+                        div.scrollTop = div.scrollHeight;
+                    }
+                };
+            }
+            else
+            {
+                var lastLog = document.getElementById('gandalf_log').innerHTML.split(/\r?\n/);
+                lastLog = lastLog[lastLog.length - 2];
+                $.post("php/update_gandalf_log.php", {postlastLog:lastLog},
+                function (lastLog) {
+                    $('#gandalf_log').append(lastLog);
+                    if (lastLog != "" && document.getElementById('keep_at_bottom').checked)
+                    {
+                        var div = document.getElementById("gandalf_log");
+                        div.scrollTop = div.scrollHeight;
+                    }
+                });
+            }
+        }
+        function getSauronData(newOrOld){
+            var xhttp = new XMLHttpRequest();
+            if (newOrOld == 1)
+            {
+                xhttp.open("GET", "php/get_sauron_log.php");
+                xhttp.send();
+                xhttp.onreadystatechange = function () {
+                    if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        document.getElementById("sauron_log").innerHTML = xhttp.responseText;
+                        var div = document.getElementById("sauron_log");
+                        div.scrollTop = div.scrollHeight;
+                    }
+                };
+            }
+            else
+            {
+                var lastLog = document.getElementById('sauron_log').innerHTML.split(/\r?\n/);
+                lastLog = lastLog[lastLog.length - 2];
+                $.post("php/update_sauron_log.php", {postlastLog:lastLog},
+                function (lastLog) {
+                    $('#sauron_log').append(lastLog);
+                    if (lastLog != "" && document.getElementById('keep_at_bottom').checked)
+                    {
+                        var div = document.getElementById("sauron_log");
+                        div.scrollTop = div.scrollHeight;
+                    }
+                });
+            }
+        }
+        function getMergedData(newOrOld){
+            var xhttp = new XMLHttpRequest();
+            if (newOrOld == 1)
+            {
+                xhttp.open("GET", "php/get_merged_log.php");
+                xhttp.send();
+                xhttp.onreadystatechange = function () {
+                    if (xhttp.readyState == 4 && xhttp.status == 200) {
+                        document.getElementById("merged_log").innerHTML = xhttp.responseText;
+                        if (document.getElementById('keep_at_bottom').checked)
+                        {
+                            var div = document.getElementById("merged_log");
+                            div.scrollTop = div.scrollHeight;
+                        }
+                    }
+                };
+            }
+        }
+    </script>
+    <style>
+        #console
+        {
+            font-family: "Lucida Console", "Lucida Sans Typewriter", Monaco, "Bitstream Vera Sans Mono", monospace;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col s12">
+            <ul class="tabs">
+                <li class="tab col s4"><a href="#gandalf_log">Gandalf's Log</a></li>
+                <li class="tab col s4"><a href="#sauron_log">Sauron's Log</a></li>
+                <li class="tab col s4"><a class="active" href="#merged_log">Merged Log</a></li>
+            </ul>
+        </div>
+    </div>
+    <div style="position: relative;">
+        <div class="switch" style="position: absolute; bottom: 20px; right: 30px;">
+            <p>Keep at bottom</p>
+            <label>
+                Off
+                <input checked id="keep_at_bottom" type="checkbox">
+                <span class="lever"></span>
+                On
+            </label>
+        </div>
+        <div class="console" id="gandalf_log" style="height: 88vh; overflow-y: auto; white-space: pre">
+        </div>
+        <div class="console" id="sauron_log" style="height: 88vh; overflow-y: auto; white-space: pre">
+        </div>
+        <div class="console" id="merged_log" style="height: 88vh; overflow-y: auto; white-space: pre">
+        </div>
+    </div>
+
+    <div class="fixed-action-btn vertical click-to-toggle" style="bottom: 45px; right: 24px;">
+        <a class="btn-floating btn-large red">
+            <i class="material-icons">menu</i>
+        </a>
+        <ul>
+            <li><a class="btn-floating green"><i class="material-icons">search</i></a></li>
+            <li><a class="btn-floating blue"><i class="material-icons">fullscreen</i></a></li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>
+
+<!--
+Save this as example for later
+<ul class="w3-navbar w3-black">
+    <li><a href="#" class="tablink" onclick="openCity(event, 'London');">London</a></li>
+    <li><a href="#" class="tablink" onclick="openCity(event, 'Paris');">Paris</a></li>
+    <li><a href="#" class="tablink" onclick="openCity(event, 'Tokyo');">Tokyo</a></li>
+</ul>
+
+
+<div class="fixed-action-btn vertical hover-to-toggle" style="bottom: 45px; right: 65px;">
+    <a class="btn-floating btn-large red">
+        <i class="material-icons">menu</i>
+    </a>
+    <ul>
+        <li><a class="btn-floating blue"><i class="material-icons">view_quilt</i></a></li>
+        <li><a class="btn-floating green"><i class="material-icons">search</i></a></li>
+    </ul>
+</div>
+
+-->
